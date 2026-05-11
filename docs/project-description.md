@@ -19,6 +19,8 @@ Provide scalable infrastructure for multiple clubs
 ## Key Features
 
 
+
+
 Member Management
 Registration and profile management
 Role-based access control
