@@ -1,0 +1,165 @@
+# Cursor Rules for SlotSmart
+# These rules guide AI behavior in Cursor IDE
+
+## Project Context
+
+Project: SlotSmart
+Type: SaaS Web Application - Tennis Club Management
+Tech Stack: ASP.NET Core (.NET 10), React, TypeScript, Material UI, Entity Framework Core, PostgreSQL
+
+## AI Framework Integration
+
+This project uses the Supervisor-Worker AI Framework.
+- Framework location: docs/SUPERVISOR/
+- Always check CURRENT-STATUS.md before major work
+- Follow role protocols (SUPERVISOR or WORKER)
+- Methodology skills available in .cursor/skills/
+
+## Coding Standards
+
+### Language: C# (Backend)
+
+- Use async/await throughout - never sync-over-async (.Result, .Wait())
+- Follow Clean Architecture: Domain → Application → Infrastructure → Presentation
+- Domain entities must NOT reference Infrastructure concerns
+- Use DTOs for all API contracts (never expose domain entities directly)
+- Use UUIDv7 for all entity identifiers
+- Use Result pattern or exceptions consistently (choose one per project)
+- All inputs must be validated (FluentValidation or DataAnnotations)
+- Prefer records for immutable DTOs and value objects
+- Use dependency injection for all dependencies
+
+### Language: TypeScript (Frontend)
+
+- Strict TypeScript enabled - no `any` types
+- Functional React components with hooks only
+- Separate API calls into dedicated service files
+- Use MUI components for consistency
+- Handle loading and error states in all async operations
+
+### General Rules
+
+- Follow existing patterns in the codebase
+- Keep controllers thin (delegate to application layer)
+- Keep functions/methods small and focused
+- Add XML doc comments for public APIs (C#)
+- Handle errors appropriately at each layer
+- Write testable code (use DI, avoid static/singleton state)
+
+### File Naming
+
+- C# files: PascalCase matching class name (`TrainingService.cs`)
+- TypeScript files: camelCase for files, PascalCase for components (`TrainingCard.tsx`)
+- Test files: match source + `.Tests.cs` or `.test.ts`
+
+### C# Namespace Conventions
+
+- `SlotSmart.Domain.[Entity]`
+- `SlotSmart.Application.[Feature].[UseCase]`
+- `SlotSmart.Infrastructure.[Provider]`
+- `SlotSmart.Api.[Controller]`
+
+### Import Organization (TypeScript)
+
+1. React imports
+2. External library imports (MUI, etc.)
+3. Internal imports (services, components, types)
+
+## Testing Requirements
+
+- Write unit tests for all business logic (Application and Domain layers)
+- Use TDD: write failing test first, then implementation
+- Run tests before committing: `dotnet test`
+- Minimum 80% coverage for business logic
+- Test command: `dotnet test`
+
+## Multi-Tenant Rules
+
+- ALWAYS filter data by ClubId in queries
+- NEVER return data from a different club
+- Multi-tenant isolation must be verified in tests
+- ClubId must flow from auth token, not user input
+
+## Documentation
+
+- Update CHANGELOG.md after changes (newest first, follow keepachangelog.com format)
+- Update README if adding major features
+- Document complex domain logic with XML comments
+- Keep docs/SUPERVISOR/ status current
+
+## What to Avoid
+
+- Don't put business logic in controllers
+- Don't reference Infrastructure from Domain layer
+- Don't use sync blocking calls in async context
+- Don't hardcode connection strings or secrets
+- Don't skip multi-tenant filtering
+- Don't expose domain entities in API responses (use DTOs)
+- Don't change multi-tenant isolation without architectural review
+
+## Preferred Patterns
+
+### Repository Pattern
+Use repository interfaces in Domain layer, implement in Infrastructure. Never query DbContext directly from Application layer.
+
+### CQRS (if adopted)
+Separate Commands (write) from Queries (read). Commands return Result, Queries return DTOs.
+
+### Error Handling
+Use ProblemDetails for API error responses. Log errors at appropriate levels (Error for failures, Warning for expected issues).
+
+## Common Tasks
+
+### Adding a new API endpoint
+1. Define DTO in Application layer
+2. Write failing test for use case
+3. Implement use case (Application layer)
+4. Add controller action (Presentation layer)
+5. Add integration test
+6. Update CHANGELOG
+
+### Adding a new domain entity
+1. Define entity in Domain layer (no EF annotations in Domain)
+2. Define repository interface in Domain
+3. Write EF configuration in Infrastructure
+4. Implement repository in Infrastructure
+5. Write unit tests
+6. Update CHANGELOG
+
+### Fixing a bug
+1. Write a failing test reproducing the bug
+2. Fix the bug
+3. Verify test passes
+4. Check for similar patterns
+5. Update CHANGELOG
+
+## Session Protocol
+
+Start of session:
+- Read docs/SUPERVISOR/CURRENT-STATUS.md
+- Check DELEGATION-TRACKER for active work
+- Understand current priorities
+
+End of session:
+- Update CURRENT-STATUS if changed
+- Update CHANGELOG if code changed
+- Create handover notes if incomplete
+
+---
+
+# SlotSmart-Specific Rules
+
+## Domain Model Rules
+- Club is the aggregate root for multi-tenancy
+- Member has exactly one Role at a time
+- Booking belongs to both Member and Training
+- MemberRelation links Parent members to Player members
+- Training can be recurring (has schedule) or one-time
+- Booking capacity must respect Training.MaxCapacity
+
+## API Conventions
+- Use plural nouns for collections: `/api/clubs`, `/api/members`
+- Use nested routes for owned resources: `/api/clubs/{clubId}/members`
+- Return 201 Created for POST with Location header
+- Return 204 No Content for DELETE
+- Use pagination for collections (PageNumber, PageSize)

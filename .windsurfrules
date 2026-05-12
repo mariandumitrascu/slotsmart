@@ -1,0 +1,51 @@
+# Windsurf Rules for SlotSmart
+
+## Project Context
+
+Project: SlotSmart
+Type: SaaS Web Application - Tennis Club Management
+Tech Stack: ASP.NET Core (.NET 10), React, TypeScript, Material UI, Entity Framework Core, PostgreSQL
+
+## AI Framework Integration
+
+This project uses the Supervisor-Worker AI Framework.
+- Framework location: docs/SUPERVISOR/
+- Always check CURRENT-STATUS.md before major work
+- Follow role protocols (SUPERVISOR or WORKER)
+
+## Core Rules
+
+### Architecture
+- Clean Architecture: Domain → Application → Infrastructure → Presentation
+- Domain layer has NO dependency on Infrastructure
+- Use DTOs for all API contracts
+- Multi-tenant isolation: always filter by ClubId
+
+### C# Standards
+- Async/await throughout (no .Result or .Wait())
+- UUIDv7 for all entity identifiers
+- Dependency injection for all dependencies
+- Validate all inputs
+
+### TypeScript Standards
+- Strict TypeScript (no `any`)
+- Functional React components with hooks
+- Separate API services from UI components
+
+### Testing
+- TDD: failing test first, then implementation
+- Test command: `dotnet test`
+- 80%+ coverage for business logic
+
+### Documentation
+- Update CHANGELOG.md after changes
+- Keep docs/SUPERVISOR/CURRENT-STATUS.md current
+
+## Session Protocol
+
+Start: Read docs/SUPERVISOR/CURRENT-STATUS.md
+End: Update CURRENT-STATUS and CHANGELOG if code changed
+
+---
+
+**Last Updated**: 2026-05-12

@@ -9,6 +9,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **AI Supervisor-Worker Framework** initialized in `docs/SUPERVISOR/` for structured AI-assisted development.
+  - Framework core files: `SUPERVISOR-FRAMEWORK.md`, `WORKER-FRAMEWORK.md`, `BEST-PRACTICES.md`.
+  - Project tracking files: `CURRENT-STATUS.md`, `DELEGATION-TRACKER.md`, `THINKING-LOG.md`, `DECISIONS-LOG.md`.
+  - Template files: `HANDOVER-TEMPLATE.md`, `BUG-FIX-TEMPLATE.md`, `EMERGENCY-PROTOCOL.md`.
+  - Session archive directory: `SESSION-SUMMARIES/`.
+- **AI IDE configuration files** in project root: `CLAUDE.md`, `context.md`, `.cursorrules`, `.windsurfrules`.
+  - Customized for SlotSmart tech stack (ASP.NET Core, Clean Architecture, React, MUI).
+  - Includes domain rules, multi-tenant safety rules, coding conventions.
+- **Methodology skills** installed in `.cursor/skills/` for Cursor IDE:
+  - `init-supervisor` — Bootstrap/resume Supervisor sessions with situational briefing.
+  - `brainstorming` — Structured design exploration before implementation.
+  - `writing-plans` — Comprehensive implementation planning with TDD task decomposition.
+  - `test-driven-development` — Red-green-refactor discipline with C# xUnit examples.
+  - `systematic-debugging` — Four-phase root-cause debugging methodology.
+  - `requesting-code-review` — Code review workflow with SlotSmart-specific checklist.
+  - `verification-before-completion` — Evidence-based completion verification.
+  - Supporting files: `root-cause-tracing.md`, `defense-in-depth.md`, `condition-based-waiting.md`.
+- **Cursor methodology bridge rule** at `.cursor/rules/superpowers-methodology.md` mapping Supervisor activities to skills.
+- **Architecture Decision Records** (ADR-001, ADR-002, ADR-003) in `DECISIONS-LOG.md` documenting framework adoption, ASP.NET Core + Clean Architecture, and UUIDv7 identifier choices.
+
 - **Plan**: full phased execution plan under `docs/plan/`.
   - Master plan index `docs/plan/README.md` with release groupings (MVP, V1.1, V2+) and phase dependency map.
   - Cross-cutting architecture docs under `docs/plan/00-architecture/`:
