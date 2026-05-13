@@ -22,7 +22,7 @@
 - Don't `async void` except for event handlers.
 - Use `Result<T>` (in `SlotSmart.Shared`) for expected failures; throw only for programmer errors and infrastructure faults.
 - Use `IClock` (or `TimeProvider`) instead of `DateTime.UtcNow` directly.
-- Use **UUIDv7** for all IDs (helper in `SlotSmart.Shared.Identifiers.UuidV7`).
+- Use **UUIDv7** for the public `EntityId` on every entity. The database primary key is a hidden `bigint` surrogate — see [`entity-identity.md`](./entity-identity.md).
 
 ### Domain layer rules
 
@@ -79,9 +79,18 @@
 - PR description must reference the task ID (e.g. `Implements P3-T02`).
 - CHANGELOG.md is updated in the same PR per the project's Development Rules (Keep a Changelog 1.1.0).
 
+## Identifiers
+
+- **Every entity uses the dual-key pattern** defined in [`entity-identity.md`](./entity-identity.md):
+  - A hidden `bigint` surrogate PK (`Id`, EF Core shadow property) — the actual database primary key / clustered index.
+  - A public `EntityId : Guid` (UUIDv7) — the only id the domain, API, JWT, audit log, and clients ever see.
+- Generate UUIDv7 server-side via the helper in `SlotSmart.Shared.Identifiers.UuidV7`.
+- Never expose the surrogate `Id` over the wire. Public JSON serializes `EntityId` as `id`.
+- Foreign keys reference the surrogate `bigint` by default; domain code expresses relationships via **navigation properties**, not Guid columns.
+
 ## Naming
 
-- Tenants identified by `Slug` (URL-safe), all lowercase.
+- Tenants identified by `Slug` (URL-safe), all lowercase. `Tenant.EntityId : Guid` is the stable platform-wide id; `Tenants.Id : bigint` is the surrogate used by all multi-tenant FKs and the `ITenantContext.TenantId` filter.
 - Time stored as `timestamp with time zone` (UTC). Display layer formats in local TZ.
 - Money (when introduced in V2) uses `decimal(18,4)` with explicit currency code.
 - Booleans are positively named: `IsActive`, not `IsNotActive`.

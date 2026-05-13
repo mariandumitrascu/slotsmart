@@ -57,6 +57,10 @@ Tests can depend on anything; production code cannot reference test assemblies.
 
 Use **NetArchTest** (or Roslyn analyzers) in `SlotSmart.Architecture.Tests` to assert these rules.
 
+## Entity base type
+
+Every entity derives from `SlotSmart.Domain.Common.Entity`, which exposes only a public `EntityId : Guid` (UUIDv7). The database primary key is a `bigint` surrogate added as an EF Core **shadow property** in `SlotSmart.Infrastructure/Persistence/Configurations/EntityConfiguration<T>`. The Domain layer never references the surrogate. Foreign keys reference the surrogate `bigint`; domain code expresses relationships via navigation properties. See [`entity-identity.md`](./entity-identity.md) for the canonical pattern.
+
 ## Module organization inside Application
 
 Inside `SlotSmart.Application`, group by **feature** then by **operation**:

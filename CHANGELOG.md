@@ -7,7 +7,55 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Plan / Architecture**: switched entity identity to a **dual-key pattern** — every entity now has a hidden `bigint` surrogate primary key (the actual clustered / B-tree PK) and a separate public `EntityId : Guid` (UUIDv7) for external use. Motivated by SQL Server's clustered-key inclusion cost and the size / join cost of 16-byte GUIDs across both Postgres and SQL Server (random GUIDs are catastrophic; sequential UUIDv7 mitigates fragmentation but not size). Foreign keys reference the surrogate `bigint`; domain code uses navigation properties. The Domain layer remains pure — the surrogate is an EF Core shadow property added in Infrastructure. Multi-tenant tables now carry `TenantId : bigint` (FK to `Tenants.Id`) instead of `TenantId : uuid`, and `ITenantContext` carries both forms.
+  - Added: `docs/plan/00-architecture/entity-identity.md` (canonical pattern, naming, EF configuration, FK strategy, Identity tables, hot-table guidance, DB specifics, architecture tests).
+  - Updated: `docs/plan/00-architecture/coding-standards.md` — new "Identifiers" section; UUIDv7 rule reframed as the public id only.
+  - Updated: `docs/plan/00-architecture/domain-glossary.md` — Identifiers & time section.
+  - Updated: `docs/plan/00-architecture/multi-tenancy-strategy.md` — `TenantId` column is `bigint`; `ITenantContext` carries both surrogate and Guid.
+  - Updated: `docs/plan/00-architecture/solution-structure.md` — added Entity base type section.
+  - Updated: `docs/plan/README.md` — `entity-identity.md` added to the read-first list, with a global interpretation note for aggregate field lists in task prompts (`Id` in a task means the public `EntityId : Guid`).
+  - Existing task prompts in `phase-1`..`phase-6` continue to list aggregate fields as `Id, TenantId, …`. Per the README's interpretation note, agents read those as `EntityId : Guid` and `TenantId : long` respectively; no per-task edits required.
+
 ### Added
+
+- **Model selection guidance** for worker handoffs:
+  - `handoff-prompts/_template.md` now requires a "Dispatch metadata" block (suggested model + rationale + escalation rule) above the copy-to-worker markers.
+  - `handoff-prompts/README.md` documents the **Opus / Sonnet / Auto** selection table with task-type guidance and explicit escalation rules.
+  - `DELEGATION-TRACKER.md` v2 inventory tables now include a **Model** column for all 33 in-scope tasks, plus a model-distribution summary (Opus: 7, Sonnet: 19, Auto: 7).
+  - `handoff-prompts/P1-T01-solution-scaffolding.md` updated with dispatch metadata: **Sonnet**, with documented escalation paths to Opus.
+
+- **Supervised execution infrastructure** for the MVP plan (Phases 1–5), under `docs/SUPERVISOR/`:
+  - `EXECUTION-PLAN.md` — strategy, sequencing, parallelism rules, risks (R1–R6, D1–D2), working agreements, and a per-session checklist.
+  - `phase-gates/` — verification specs that gate phase advancement: `README.md`, `phase-1-gate.md`, `phase-2-gate.md`, `phase-3-gate.md`, `phase-4-gate.md`, `phase-5-gate.md`. Each contains pre-conditions, automated shell-verification commands with expected outputs, manual checks, a promotion checklist, and a run log.
+  - `handoff-prompts/` — worker handoff prompt infrastructure: `README.md`, `_template.md`, and the first ready-to-dispatch prompt `P1-T01-solution-scaffolding.md`.
+  - `DELEGATION-TRACKER.md` rewritten (v2) to inventory all 33 in-scope tasks across Phases 1–5 with size, dependencies, status, and owning phase gate.
+  - `CURRENT-STATUS.md` rewritten (v2) to dashboard mission progress (0/33 tasks, 0/5 gates) and surface open decisions (R1: .NET version pin; execution mode for P1-T01).
+  - `THINKING-LOG.md` entry "Supervised Execution Plan for MVP" recording the just-in-time handoff strategy.
+  - `DECISIONS-LOG.md` ADR-004 (phase gates as checked-in markdown) and ADR-005 (just-in-time handoff prompt generation). ADR-006 reserved for the .NET-version pin decision.
+
+### Why this matters
+
+The plan files in `docs/plan/` describe **what** to build per phase. The supervised execution infrastructure adds **how to safely advance**: every phase boundary now has a copy-paste verification spec, every worker dispatch has a context-aware handoff prompt, and every task is tracked from queued → dispatched → in-review → done with explicit gate accountability. This is the bridge from "well-written plan" to "actually shippable MVP".
+
+### Files added
+
+- `docs/SUPERVISOR/EXECUTION-PLAN.md`
+- `docs/SUPERVISOR/phase-gates/README.md`
+- `docs/SUPERVISOR/phase-gates/phase-1-gate.md` … `phase-5-gate.md`
+- `docs/SUPERVISOR/handoff-prompts/README.md`
+- `docs/SUPERVISOR/handoff-prompts/_template.md`
+- `docs/SUPERVISOR/handoff-prompts/P1-T01-solution-scaffolding.md`
+
+### Files changed
+
+- `docs/SUPERVISOR/DELEGATION-TRACKER.md` (v1 → v2: full P1–P5 inventory)
+- `docs/SUPERVISOR/CURRENT-STATUS.md` (v1 → v2: mission dashboard)
+- `docs/SUPERVISOR/THINKING-LOG.md` (added 2026-05-12 strategy entry)
+- `docs/SUPERVISOR/DECISIONS-LOG.md` (added ADR-004, ADR-005; reserved ADR-006)
+
+---
 
 - **AI Supervisor-Worker Framework** initialized in `docs/SUPERVISOR/` for structured AI-assisted development.
   - Framework core files: `SUPERVISOR-FRAMEWORK.md`, `WORKER-FRAMEWORK.md`, `BEST-PRACTICES.md`.

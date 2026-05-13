@@ -86,12 +86,21 @@ Before assigning any task to an agent, make sure the agent has read:
 
 1. [`00-architecture/tech-stack.md`](./00-architecture/tech-stack.md) — the canonical tech choices.
 2. [`00-architecture/solution-structure.md`](./00-architecture/solution-structure.md) — Clean Architecture project layout.
-3. [`00-architecture/multi-tenancy-strategy.md`](./00-architecture/multi-tenancy-strategy.md) — tenant resolution, data isolation.
-4. [`00-architecture/coding-standards.md`](./00-architecture/coding-standards.md) — naming, IDs, validation, errors, logging, testing.
-5. [`00-architecture/api-conventions.md`](./00-architecture/api-conventions.md) — REST shape, pagination, errors, versioning.
-6. [`00-architecture/domain-glossary.md`](./00-architecture/domain-glossary.md) — entities, terms, invariants.
+3. [`00-architecture/entity-identity.md`](./00-architecture/entity-identity.md) — **dual-key entity pattern** (hidden `bigint` surrogate PK + public `EntityId : Guid` UUIDv7). Applies to every aggregate in every phase.
+4. [`00-architecture/multi-tenancy-strategy.md`](./00-architecture/multi-tenancy-strategy.md) — tenant resolution, data isolation.
+5. [`00-architecture/coding-standards.md`](./00-architecture/coding-standards.md) — naming, IDs, validation, errors, logging, testing.
+6. [`00-architecture/api-conventions.md`](./00-architecture/api-conventions.md) — REST shape, pagination, errors, versioning.
+7. [`00-architecture/domain-glossary.md`](./00-architecture/domain-glossary.md) — entities, terms, invariants.
 
 The [`_templates/task-prompt-template.md`](./_templates/task-prompt-template.md) is the canonical shape for every handoff prompt.
+
+### Reading aggregate field lists in task prompts
+
+The phase task prompts list aggregate fields as `Id, TenantId, FieldA, FieldB, …`. Interpret them as follows (per [`entity-identity.md`](./00-architecture/entity-identity.md)):
+
+- **`Id` in a task field list** → the public `EntityId : Guid (UUIDv7)` on the entity. The hidden surrogate `Id : long` is added by the `Entity` base class + `EntityConfiguration<T>` and never appears in C# domain code.
+- **`TenantId`** → `long` (FK to `Tenants.Id`, the surrogate). Not the Guid form.
+- **A field listed as `FooId : Guid` referring to another aggregate** → a navigation property `Foo` on the entity plus a shadow `bigint` FK in the configuration. The Guid form is reachable via `entity.Foo.EntityId`.
 
 ---
 

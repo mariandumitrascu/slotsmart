@@ -49,7 +49,9 @@
 
 ## Identifiers & time
 
-- All public identifiers are **UUIDv7** (`Guid` in C#).
+- All **public** identifiers are **UUIDv7** (`Guid` in C#, exposed in C# as `EntityId`, serialized as `id` in JSON).
+- The **database primary key** is a hidden `bigint` surrogate (an EF Core shadow property called `Id`) — never exposed in the API, never used in the domain. See [`entity-identity.md`](./entity-identity.md) for the full pattern.
+- Foreign keys reference the surrogate `bigint`. Domain code expresses relationships via navigation properties; handlers translate incoming Guid ids to entities at the boundary via the unique index on `EntityId`.
 - All times are stored as `timestamp with time zone` UTC. UI converts to the **tenant default time zone** (a property on `Tenant`) and the **user's preferred time zone** if set.
 - Dates without time (e.g. birthdate) are stored as `date`.
 

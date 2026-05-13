@@ -16,10 +16,10 @@ Cons: a single tenant cannot have its own backup window; large tenants in the fu
 Every multi-tenant table has:
 
 ```csharp
-public Guid TenantId { get; private set; }
+public long TenantId { get; private set; }   // FK to Tenants.Id (the surrogate bigint PK)
 ```
 
-Stored as `uuid NOT NULL` with a non-nullable index. Most tables get a composite index `(TenantId, <hot column>)`.
+Stored as `bigint NOT NULL` with a non-nullable index. Most tables get a composite index `(TenantId, <hot column>)`. The Guid form of the tenant (`Tenant.EntityId`, UUIDv7) is **not** stored on per-row tables — it would just waste 16 bytes per row. See [`entity-identity.md`](./entity-identity.md) for the dual-key pattern that motivates this.
 
 ### Always-on global query filter
 
@@ -39,9 +39,11 @@ A SaveChanges interceptor (`TenantStampingInterceptor`) sets `TenantId` on inser
 
 Order of resolution (first wins):
 
-1. **JWT claim** `tenant_id` — for authenticated calls.
+1. **JWT claim** `tenant_id` — for authenticated calls. Always carries `Tenant.EntityId` (UUIDv7), never the surrogate.
 2. **Subdomain** `<slug>.slotsmart.app` — for marketing/login flows; resolves to a tenant by `Slug`.
 3. **Header** `X-Tenant-Slug` — for local dev and admin tooling.
+
+Whichever resolution path runs, the result is **both** the Guid and the surrogate `bigint`, stored on `ITenantContext`. The Guid → surrogate lookup is served from an in-memory cache keyed by `EntityId` (tenants are small in number and change rarely; cache entries are evicted on suspend/delete).
 
 If none match for a request that requires tenancy → `401 / 403` with `tenant_required` problem detail.
 
@@ -52,13 +54,14 @@ A small set of endpoints is **tenant-agnostic** (health, OpenAPI, public signup,
 ```csharp
 public interface ITenantContext
 {
-    Guid TenantId { get; }
+    long TenantId { get; }            // surrogate bigint — used by the query filter and FKs
+    Guid TenantEntityId { get; }      // UUIDv7 — used in JWT, audit, public URLs
     string TenantSlug { get; }
     bool IsResolved { get; }
 }
 ```
 
-Registered as **scoped**. Implementation is `HttpTenantContext` for the API; tests use `FakeTenantContext`. Background jobs set the tenant explicitly via `using (tenantScope.Begin(tenantId)) { … }`.
+Registered as **scoped**. Implementation is `HttpTenantContext` for the API; tests use `FakeTenantContext`. Background jobs set the tenant explicitly via `using (tenantScope.Begin(tenantEntityId)) { … }`, which internally resolves the surrogate `TenantId` from the Guid.
 
 ## 4. Tenant lifecycle
 

@@ -47,6 +47,54 @@ Each decision should be documented as an **ADR (Architecture Decision Record)**:
 
 ## 🔍 DECISIONS
 
+### ADR-005: Worker Handoff Prompts Generated Just-in-Time
+
+**Date**: 2026-05-12
+**Status**: Accepted
+**Deciders**: SUPERVISOR (subject to user override)
+
+#### Context
+The mission is to execute Phases 1–5 (33 tasks). Each handoff prompt embeds context like "what's been done so far", "git sha at handoff", and "your dependencies are met because…". Pre-generating all 33 prompts up front would (a) bloat the supervisor session immediately, (b) guarantee that prompts go stale before workers read them.
+
+#### Decision
+- Maintain a permanent `handoff-prompts/_template.md` and `handoff-prompts/README.md`.
+- Pre-generate **only** the prompt for the immediately-unblocked task.
+- Generate the next batch of prompts at the moment a dependency resolves (e.g., when P1-T01 is accepted, generate P1-T02/T04/T05/T07 in the same session).
+
+#### Alternatives Considered
+1. **Pre-generate all 33** — rejected: stale-prompt risk, supervisor context bloat.
+2. **No prompts; workers just read the task file directly** — rejected: loses the framework context, "what's been done", and supervision contract.
+
+#### Consequences
+**Positive**: prompts are always current; supervisor context stays small; pattern matches the framework's worker-context-isolation intent.
+**Negative**: each phase advancement has a small SUPERVISOR overhead to generate the next prompts.
+
+---
+
+### ADR-004: Phase Gates as Checked-in Markdown with Executable Commands
+
+**Date**: 2026-05-12
+**Status**: Accepted
+**Deciders**: SUPERVISOR (subject to user override)
+
+#### Context
+The user requested verification & testing between phases. The framework needs a clear, repeatable contract for when a phase is "done" and the next phase can open.
+
+#### Decision
+- Create `docs/SUPERVISOR/phase-gates/phase-{1..5}-gate.md`, one per phase boundary.
+- Each gate doc contains: pre-conditions (task list), automated verification (shell commands with expected outputs), manual verification (observable behaviors), promotion checklist, and an append-only run log.
+- A phase is **closed** only when its gate passes per `EXECUTION-PLAN.md` §2.2.
+
+#### Alternatives Considered
+1. **CI-only gates (e.g., `tools/phase-gate.sh`)** — rejected for now: the gates evolve with the project; markdown is easier to amend in PRs and can be promoted to scripts later.
+2. **Implicit gates (just check the phase README acceptance criteria)** — rejected: not actionable enough; no run log.
+
+#### Consequences
+**Positive**: anyone can verify a phase from a clean clone by running the listed commands; PR reviewers can spot gate-coverage gaps.
+**Negative**: the gate spec must be kept in sync with the plan when task scope changes (mitigated by version-stamping each gate doc).
+
+---
+
 ### ADR-001: Adopt AI Supervisor-Worker Framework
 
 **Date**: 2026-05-12 
@@ -175,9 +223,13 @@ Quick reference to find decisions by topic:
 | 001 | Adopt AI Framework | Accepted | Process |
 | 002 | ASP.NET Core + Clean Architecture | Accepted | Architecture |
 | 003 | UUIDv7 Identifiers | Accepted | Data Model |
+| 004 | Phase Gates as Checked-in Markdown with Executable Commands | Accepted | Process |
+| 005 | Worker Handoff Prompts Generated Just-in-Time | Accepted | Process |
+
+> ADR-006 is **reserved** for the .NET-version pin decision (open as risk R1 in `EXECUTION-PLAN.md`). It will be authored by the worker executing P1-T01 once the user confirms the pin policy.
 
 ---
 
-**Log Version**: 1.0 
-**Started**: 2026-05-12 
-**Next ADR Number**: 004
+**Log Version**: 1.1
+**Started**: 2026-05-12
+**Next ADR Number**: 006 (005 reserved per above)
