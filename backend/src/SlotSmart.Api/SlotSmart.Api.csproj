@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <RootNamespace>SlotSmart.Api</RootNamespace>
+    <AssemblyName>SlotSmart.Api</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SlotSmart.Application\SlotSmart.Application.csproj" />
+    <ProjectReference Include="..\SlotSmart.Infrastructure\SlotSmart.Infrastructure.csproj" />
+    <ProjectReference Include="..\SlotSmart.Domain\SlotSmart.Domain.csproj" />
+    <ProjectReference Include="..\SlotSmart.Shared\SlotSmart.Shared.csproj" />
+  </ItemGroup>
+
+  <!--
+    InternalsVisibleTo so SlotSmart.Api.Tests can use WebApplicationFactory
+    against any internal classes added later. Trivial today; future-proof.
+  -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="SlotSmart.Api.Tests" />
+  </ItemGroup>
+
+</Project>

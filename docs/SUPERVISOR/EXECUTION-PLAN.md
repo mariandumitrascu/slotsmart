@@ -81,9 +81,9 @@ The SUPERVISOR may dispatch up to 2 workers in parallel inside a phase. Tighter 
 
 | ID | Risk / Decision | Status | Resolution |
 |---|---|---|---|
-| R1 | .NET 10 SDK not GA — installed: 9.0.200 | **OPEN** | Plan §10 in P1-T01 specifies `global.json` with `rollForward: latestPreview`. Supervisor proposes: pin .NET 10 in `global.json` with latestPreview rollForward; if it does not resolve, fall back to .NET 9 and document deviation in DECISIONS-LOG. **Awaiting user input.** |
-| R2 | EF Core 10 may also lag SDK availability | OPEN | Pin EF Core to latest stable preview matching chosen SDK |
-| R3 | OpenIddict 6.x interaction with .NET 10 preview | OPEN | Verify in P2-T02 before committing |
+| R1 | .NET 10 SDK availability | **CLOSED 2026-05-13** | .NET 10 went GA on 2026-05-12 (10.0.300 SDK / 10.0.8 runtime, LTS). SUPERVISOR installed 10.0.300 to `~/.dotnet` for the active session. ADR-006 amended to pin GA, not preview. |
+| R2 | EF Core 10 availability | **CLOSED 2026-05-13** | EF Core 10 GA shipped with .NET 10. Will be pinned in `Directory.Packages.props` in P1-T02. |
+| R3 | OpenIddict on .NET 10 | OPEN | Verify in P2-T02 — OpenIddict 6.x targets .NET 8/9; check for .NET 10 support before committing. |
 | R4 | Time zones in P3-T01 (`ClubSettings.TimeZone`) and P4 (training scheduling) — TZDB on the host | OPEN | Use `TimeZoneInfo` with cross-platform fallback (NodaTime?). Decide in P3-T01 |
 | R5 | Recurring training materialization horizon (12 weeks default per phase README, but how many?) | OPEN | Decide in P4-T02 with explicit ADR |
 | R6 | Booking idempotency key strategy (header? request body?) | OPEN | Decide in P5-T01 with explicit ADR |

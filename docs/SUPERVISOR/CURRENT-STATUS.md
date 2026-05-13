@@ -1,10 +1,10 @@
 # Current Status
 ## SlotSmart - Real-time Project Health Dashboard
 
-**Last Updated**: 2026-05-12
-**Project Phase**: Phase 1 — Foundation (about to begin)
+**Last Updated**: 2026-05-13
+**Project Phase**: Phase 1 — Foundation (1/7 tasks complete)
 **Mission**: Deliver MVP via Phases 1–5
-**Overall Health**: 🟢 Ready to execute
+**Overall Health**: 🟢 In flight
 
 ---
 
@@ -15,18 +15,23 @@
 │ SlotSmart - STATUS OVERVIEW                                 │
 ├─────────────────────────────────────────────────────────────┤
 │                                                              │
-│ 🏗️  PHASE: Phase 1 — Foundation (READY TO START)            │
+│ 🏗️  PHASE: Phase 1 — Foundation (1/7 done)                  │
 │                                                              │
-│    Plan & Architecture:      [✅ COMPLETE]                  │
-│    SUPERVISOR framework:     [✅ INSTALLED]                 │
-│    Execution plan & gates:   [✅ DEFINED]                   │
-│    P1-T01 handoff prompt:    [📦 READY TO DISPATCH]         │
-│    Backend / Frontend code:  [⏳ NOT STARTED]               │
+│    Plan & Architecture:        [✅ COMPLETE]                │
+│    SUPERVISOR framework:       [✅ INSTALLED]               │
+│    Execution plan & gates:     [✅ DEFINED]                 │
+│    Backend solution scaffold:  [✅ P1-T01 LANDED]           │
+│    EF Core / Postgres:         [⏳ P1-T02]                  │
+│    Docker compose dev stack:   [⏳ P1-T03]                  │
+│    CI pipeline:                [⏳ P1-T04]                  │
+│    Frontend (React + MUI):     [⏳ P1-T05]                  │
+│    Health endpoint w/ DB ping: [⏳ P1-T06]                  │
+│    Logging / config / OTel:    [⏳ P1-T07]                  │
 │                                                              │
 │ 📋 ACTIVE WORK:          0 tasks in progress                │
-│ 📦 READY TO DISPATCH:    1 (P1-T01)                         │
-│ ⚠️  OPEN DECISIONS:      1 (.NET version pin)               │
-│ 📅 LAST UPDATE:          2026-05-12                         │
+│ 📦 READY TO DISPATCH:    4 (P1-T02, T04, T05, T07)          │
+│ ⚠️  OPEN DECISIONS:      0 (R1, R2, .NET pin all closed)    │
+│ 📅 LAST UPDATE:          2026-05-13                         │
 │                                                              │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -37,13 +42,13 @@
 
 | Phase | Tasks | Status | Gate |
 |---|---|---|---|
-| 1. Foundation | 0 / 7 | ⏳ Ready to start | [G1](./phase-gates/phase-1-gate.md) ⏳ |
+| 1. Foundation | 1 / 7 | 🟢 In progress (P1-T01 ✅) | [G1](./phase-gates/phase-1-gate.md) ⏳ |
 | 2. Auth & Tenancy | 0 / 6 | ⏳ Blocked on P1 | [G2](./phase-gates/phase-2-gate.md) ⏳ |
 | 3. Club & Members | 0 / 7 | ⏳ Blocked on P2 | [G3](./phase-gates/phase-3-gate.md) ⏳ |
 | 4. Training | 0 / 7 | ⏳ Blocked on P3 | [G4](./phase-gates/phase-4-gate.md) ⏳ |
 | 5. Booking | 0 / 6 | ⏳ Blocked on P4 | [G5](./phase-gates/phase-5-gate.md) ⏳ — MVP DONE |
 
-**Overall MVP completion**: 0 / 33 tasks · 0 / 5 gates passed.
+**Overall MVP completion**: 1 / 33 tasks · 0 / 5 gates passed.
 
 ---
 
@@ -59,14 +64,14 @@
 | CI Status | N/A (no pipeline) | Green | ⏳ |
 | Phase Gates Passed | 0/5 | 5/5 | ⏳ |
 
-### Health Score: 8/10 — READY
+### Health Score: 9/10 — IN FLIGHT
 
 - ✅ Plan & architecture: 2/2
 - ✅ SUPERVISOR infrastructure: 2/2
-- ✅ Handoff prompts ready (at least P1-T01): 2/2
-- 🟡 Toolchain readiness: 1/2 (.NET 10 not installed → mitigation in place)
-- ⏳ Code progress: 0/2 (none yet)
-- ✅ No blockers: bonus
+- ✅ Handoff prompts framework + first prompt executed: 2/2
+- ✅ Toolchain readiness: 2/2 (.NET 10.0.300 installed, pinned, verified)
+- 🟢 Code progress: 1/2 (backend scaffold landed; rest of P1 pending)
+- ✅ No blockers
 
 ---
 
@@ -74,9 +79,10 @@
 
 ### Immediate (this session / next)
 
-1. [ ] **User decision**: confirm .NET-version pin strategy (.NET 10 preview with `latestPreview` rollForward, fall back to .NET 9 if preview unavailable). See R1 in [`./EXECUTION-PLAN.md`](./EXECUTION-PLAN.md).
-2. [ ] **User decision**: choose execution mode for P1-T01 — (a) supervisor self-executes in Hybrid mode now, (b) dispatch to a separate worker chat, (c) you execute it locally. The handoff prompt is ready either way.
-3. [ ] Once P1-T01 lands → SUPERVISOR validates against Phase 1 gate §2.1, generates next-up handoff prompts (T02, T04, T05, T07).
+1. [x] **R1 / R2 closed**: .NET 10 went GA on 2026-05-12; pinned 10.0.300 in `backend/global.json` per ADR-006. Installed locally to `~/.dotnet`.
+2. [x] **P1-T01 landed** in HYBRID mode: backend solution scaffold builds clean, 15 tests pass, `/api/v1/health → 200`, architecture-test red-green demonstrated.
+3. [ ] Generate next batch of handoff prompts: **P1-T02** (EF Core + DbContext + dual-key entity configuration base — Sonnet), **P1-T04** (CI pipeline — Sonnet), **P1-T05** (frontend bootstrap — Sonnet), **P1-T07** (logging / config / OTel — Sonnet). Up to 2 in parallel per `EXECUTION-PLAN.md` §2.4.
+4. [ ] **User decision (low urgency)**: do you want me to (a) dispatch P1-T02 next session in HYBRID mode, (b) generate the four handoff prompts and let you delegate them, or (c) some mix?
 
 ### Phase 1 in flight (after T01)
 

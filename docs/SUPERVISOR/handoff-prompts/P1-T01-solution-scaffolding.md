@@ -8,11 +8,16 @@
 ## Dispatch metadata (SUPERVISOR / user-facing — do **not** copy to the worker)
 
 - **Suggested model**: **Sonnet** (balanced default)
-- **Why this model**: The canonical task spec is highly explicit (file list, acceptance criteria, suggested execution outline). The work is mostly mechanical (`dotnet new …`, project references, central package management) with one architectural test write. Sonnet handles this well at lower cost than Opus.
+- **Why this model**: The canonical task spec is highly explicit (file list, acceptance criteria, suggested execution outline). The work is mostly mechanical (`dotnet new …`, project references, central package management) with two architectural-test writes (layer rules + dual-key entity rules). Sonnet handles this well at lower cost than Opus.
 - **Suggested escalation**: Switch to **Opus** if either of these happens:
-  - The .NET 10 preview SDK install fails on the host and the worker needs to author **ADR-006** for the .NET-version fallback (architectural judgment).
-  - The `Architecture.Tests` design becomes non-trivial (e.g., the worker proposes Roslyn analyzers instead of NetArchTest).
-- **Do not use Auto**: This task sets the conventions (CPM, layer rules, NetArchTest patterns) that every later worker inherits. Mistakes here propagate.
+  - The .NET 10 preview SDK install fails on the host and the fallback to .NET 9 needs more nuance than ADR-006 currently anticipates.
+  - The `Architecture.Tests` design becomes non-trivial (e.g., proposing Roslyn analyzers instead of NetArchTest).
+- **Do not use Auto**: This task sets the conventions (CPM, layer rules, **dual-key Entity base class**, NetArchTest patterns) that every later worker inherits. Mistakes here propagate.
+
+## Updates since the last revision of this handoff (2026-05-13)
+
+- **ADR-007 — Dual-key identity pattern** has been adopted. ADR-003 (UUIDv7 PK) is **superseded**. The Domain layer now requires an `Entity` base class with a public `EntityId : Guid` (UUIDv7); the storage primary key is a hidden `bigint` surrogate added by Infrastructure. `IMultiTenantEntity.TenantId` is `long`, not `Guid`. **You must read `docs/plan/00-architecture/entity-identity.md` end-to-end before writing any code in `SlotSmart.Domain`.**
+- **ADR-006 — .NET version pin** has been authored by the SUPERVISOR with the documented mitigation (preview SDK with `latestPreview` rollForward, .NET 9 fallback). You don't need to author it — just follow it.
 
 ---
 
@@ -50,7 +55,9 @@ In this order:
 
 1. [`docs/plan/00-architecture/tech-stack.md`](../../plan/00-architecture/tech-stack.md)
 2. [`docs/plan/00-architecture/solution-structure.md`](../../plan/00-architecture/solution-structure.md) — the layer diagram is your bible
-3. [`docs/plan/00-architecture/coding-standards.md`](../../plan/00-architecture/coding-standards.md)
+3. [`docs/plan/00-architecture/entity-identity.md`](../../plan/00-architecture/entity-identity.md) — **NEW & REQUIRED**: dual-key pattern (ADR-007). The `Entity` base class you create in `SlotSmart.Domain` must follow this pattern. EF configuration belongs in P1-T02; in P1-T01 you only need the Domain-side abstractions and the architecture tests that enforce them.
+4. [`docs/plan/00-architecture/coding-standards.md`](../../plan/00-architecture/coding-standards.md)
+5. [`docs/plan/00-architecture/multi-tenancy-strategy.md`](../../plan/00-architecture/multi-tenancy-strategy.md) — for `IMultiTenantEntity { long TenantId }`.
 
 ## 4. Constraints specific to this project
 
@@ -67,12 +74,20 @@ In this order:
 
 The plan requires layer-rule tests using `NetArchTest` (or Roslyn). At minimum:
 
+**Layer rules** (from `solution-structure.md`):
 - `Domain` references nothing outside the BCL.
 - `Application` references only `Domain` + `Shared`.
 - `Infrastructure` does not reference `Api`.
 - `Api` is the only project allowed to reference `Infrastructure`.
 
 Write at least one test that **would fail** if someone made `Domain` reference EF Core, and verify it fails when you temporarily add such a reference, then remove the reference and confirm green.
+
+**Dual-key entity rules** (from `entity-identity.md` §9 — apply the ones meaningful in P1-T01; the rest become live in P1-T02):
+- Every concrete class in `SlotSmart.Domain` that represents a persistent entity inherits from `Entity` (the base class you'll create).
+- No `[Key]` attribute on `EntityId`.
+- `EntityId` has no public setter (only `protected init` or set in factory).
+
+The remaining rules (e.g., "every entity configuration calls `base.Configure(builder)`", "no DTO exposes `int64 id`") belong in P1-T02 / P1-T06 — note the gap in your completion report so the next worker picks them up.
 
 ### 4.4 Methodology skills are installed
 
@@ -100,8 +115,10 @@ All of these must be true:
 - [ ] `cd backend && dotnet test --no-build` passes; output cited in the report.
 - [ ] `cd backend && dotnet run --project src/SlotSmart.Api` serves `GET http://localhost:5080/api/v1/health` → `200 {"status":"ok"}`. Cite a `curl -fsS` against it.
 - [ ] `Architecture.Tests` includes at least one test that would fail if `Domain` referenced EF Core; you demonstrated red-green for it.
-- [ ] `CHANGELOG.md` updated under `[Unreleased] / Added` with: "Initial .NET Clean Architecture solution scaffold (`backend/`)" plus a one-line note about the .NET version decision (link to ADR-006).
-- [ ] `DECISIONS-LOG.md` has **ADR-006** documenting the .NET 10 pin / fallback decision.
+- [ ] `Entity` base class exists in `SlotSmart.Domain/Common/Entity.cs` per `entity-identity.md` §2; `IMultiTenantEntity { long TenantId }` exists; `IAggregateRoot` and `IDomainEvent` marker interfaces exist.
+- [ ] Architecture test asserts every concrete entity subclass exposes `EntityId` and inherits from `Entity` (in P1-T01 there are no concrete entities yet — the test fails-when-violated-later, not red-green today).
+- [ ] `CHANGELOG.md` updated under `[Unreleased] / Added` with: "Initial .NET Clean Architecture solution scaffold (`backend/`)" plus a one-line note linking ADR-006 (.NET pin) and ADR-007 (dual-key Domain abstractions introduced).
+- [ ] `DECISIONS-LOG.md` already contains ADR-006 and ADR-007 (authored by SUPERVISOR). You may need to update them with empirical notes from the install (e.g., the actual preview SDK version installed).
 - [ ] No `TODO` / `FIXME` left without a tracked follow-up.
 - [ ] `.gitignore` covers Visual Studio / Rider / macOS / Node, plus `frontend/.env*` (even though frontend isn't here yet — set the convention).
 

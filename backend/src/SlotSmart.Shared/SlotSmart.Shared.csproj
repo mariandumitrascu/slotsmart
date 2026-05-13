@@ -1,0 +1,8 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>SlotSmart.Shared</RootNamespace>
+    <AssemblyName>SlotSmart.Shared</AssemblyName>
+  </PropertyGroup>
+
+</Project>

@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>SlotSmart.Domain</RootNamespace>
+    <AssemblyName>SlotSmart.Domain</AssemblyName>
+  </PropertyGroup>
+
+  <!--
+    Layer rule: Domain references nothing outside the BCL.
+    No project or package references here. Enforced by SlotSmart.Architecture.Tests
+    (LayerRulesTests + EntityIdentityRulesTests).
+  -->
+
+</Project>

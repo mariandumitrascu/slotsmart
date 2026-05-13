@@ -20,6 +20,31 @@ Each entry should include:
 
 ## 🔍 RECENT ENTRIES
 
+### 2026-05-13 - P1-T01 closed in HYBRID mode (.NET 10 GA pivot + dual-key adoption)
+
+**Context**
+Resuming an interrupted execution. Two architectural facts changed since the last session:
+1. The user committed the **dual-key identity pattern** (`docs/plan/00-architecture/entity-identity.md`), superseding ADR-003 (UUIDv7 PK).
+2. .NET 10 went **GA** on 2026-05-12 (10.0.300, LTS), removing risk R1 entirely. The "preview / fallback" plan in the original handoff is now obsolete.
+
+**Decision**
+- Ratify the dual-key pattern as ADR-007; mark ADR-003 superseded.
+- Replace the preview-pin plan with ADR-006 → pin GA 10.0.300 with `latestFeature` rollForward.
+- Update P1-T01 handoff prompt to make `entity-identity.md` required reading and add four dual-key arch tests.
+- Execute P1-T01 myself in HYBRID mode (matches `EXECUTION-PLAN.md` §2.1 — foundational scaffolding is the canonical hybrid case).
+
+**Reasoning**
+- Re-running the dispatch dance for a task whose worker spec is already explicit and whose unblockers are now resolved would have cost more than it saved. HYBRID was the right tool.
+- Keeping the architecture tests strict from day 1 (layer rules + dual-key entity rules) means every later worker inherits the safety net. The red-green demo (temporary EF Core reference in Domain → 1/9 fail → revert → 9/9 green) is logged so future audits can reproduce it cheaply.
+
+**Impact**
+- Phase 1 progress: 1 / 7 tasks (14%).
+- 4 tasks unblocked (P1-T02, T04, T05, T07) — handoff prompts queued for next session.
+- All open risks at the SUPERVISOR layer (R1, R2, .NET pin policy, execution mode for P1-T01) are now closed.
+- One subtle deviation from the original plan worth flagging: `dotnet new sln` in .NET 10 produces `.slnx` (XML) by default rather than `.sln`. Adopted as-is — same tooling support, modern format. Architecture docs that mention `SlotSmart.sln` are forward-compatible because `dotnet build` / `dotnet test` accept either; README documents the `.slnx` extension.
+
+---
+
 ### 2026-05-12 - Supervised Execution Plan for MVP (Phases 1–5)
 
 **Context**

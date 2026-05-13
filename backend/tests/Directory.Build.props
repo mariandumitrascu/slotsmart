@@ -1,0 +1,16 @@
+<Project>
+
+  <!--
+    Test project overrides. Tests are exempt from TreatWarningsAsErrors
+    (so an analyzer suggestion never fails CI), and from documentation/style strictness.
+  -->
+
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <NoWarn>$(NoWarn);CA1707;CA2007;CA1861;IDE0005;CS8602;CS8625</NoWarn>
+  </PropertyGroup>
+
+</Project>

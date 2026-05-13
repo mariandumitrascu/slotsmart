@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>SlotSmart.Architecture.Tests</RootNamespace>
+    <AssemblyName>SlotSmart.Architecture.Tests</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="FluentAssertions" />
+    <PackageReference Include="NetArchTest.Rules" />
+    <PackageReference Include="coverlet.collector" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+    <Using Include="FluentAssertions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\SlotSmart.Domain\SlotSmart.Domain.csproj" />
+    <ProjectReference Include="..\..\src\SlotSmart.Application\SlotSmart.Application.csproj" />
+    <ProjectReference Include="..\..\src\SlotSmart.Infrastructure\SlotSmart.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\SlotSmart.Api\SlotSmart.Api.csproj" />
+    <ProjectReference Include="..\..\src\SlotSmart.Shared\SlotSmart.Shared.csproj" />
+  </ItemGroup>
+
+</Project>

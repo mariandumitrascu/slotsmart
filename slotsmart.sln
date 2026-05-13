@@ -1,0 +1,98 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "backend", "backend", "{1AE8ACA6-933B-BF2A-3671-3E2EAC007D16}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{F57642F3-C37C-D174-720E-6A6AAD5BEE22}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SlotSmart.Infrastructure.Tests", "backend\tests\SlotSmart.Infrastructure.Tests\SlotSmart.Infrastructure.Tests.csproj", "{E114D0A4-F167-7388-1AC2-BA967C5C9DC9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SlotSmart.Application.Tests", "backend\tests\SlotSmart.Application.Tests\SlotSmart.Application.Tests.csproj", "{8787F9DB-5AAE-42DD-A9F9-2E1287E3A634}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SlotSmart.Domain.Tests", "backend\tests\SlotSmart.Domain.Tests\SlotSmart.Domain.Tests.csproj", "{98EBEF9D-FF98-BC26-0C73-4D57B95C21E2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SlotSmart.Architecture.Tests", "backend\tests\SlotSmart.Architecture.Tests\SlotSmart.Architecture.Tests.csproj", "{BF8BE70E-0CD7-26B9-8568-4FA5EA0D9B93}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SlotSmart.Api.Tests", "backend\tests\SlotSmart.Api.Tests\SlotSmart.Api.Tests.csproj", "{6E2C3A7E-C46D-D631-92D4-B00A663F5D8E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{0F9113EE-888A-26D2-68B0-4A7D0A2A8745}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SlotSmart.Application", "backend\src\SlotSmart.Application\SlotSmart.Application.csproj", "{FF5CB028-35D7-F1FC-961A-65BF63B44114}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SlotSmart.Shared", "backend\src\SlotSmart.Shared\SlotSmart.Shared.csproj", "{78F8C175-869F-CA33-3A37-F7782D75F3E1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SlotSmart.Api", "backend\src\SlotSmart.Api\SlotSmart.Api.csproj", "{58AEF624-F04D-4319-191E-D12632AA4319}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SlotSmart.Infrastructure", "backend\src\SlotSmart.Infrastructure\SlotSmart.Infrastructure.csproj", "{1B032C3B-2B71-CF73-6017-5FED45E39193}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SlotSmart.Domain", "backend\src\SlotSmart.Domain\SlotSmart.Domain.csproj", "{65060AEC-1900-2457-AC8C-EF69955C453D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E114D0A4-F167-7388-1AC2-BA967C5C9DC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E114D0A4-F167-7388-1AC2-BA967C5C9DC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E114D0A4-F167-7388-1AC2-BA967C5C9DC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E114D0A4-F167-7388-1AC2-BA967C5C9DC9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8787F9DB-5AAE-42DD-A9F9-2E1287E3A634}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8787F9DB-5AAE-42DD-A9F9-2E1287E3A634}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8787F9DB-5AAE-42DD-A9F9-2E1287E3A634}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8787F9DB-5AAE-42DD-A9F9-2E1287E3A634}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98EBEF9D-FF98-BC26-0C73-4D57B95C21E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98EBEF9D-FF98-BC26-0C73-4D57B95C21E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98EBEF9D-FF98-BC26-0C73-4D57B95C21E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98EBEF9D-FF98-BC26-0C73-4D57B95C21E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF8BE70E-0CD7-26B9-8568-4FA5EA0D9B93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF8BE70E-0CD7-26B9-8568-4FA5EA0D9B93}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF8BE70E-0CD7-26B9-8568-4FA5EA0D9B93}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF8BE70E-0CD7-26B9-8568-4FA5EA0D9B93}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E2C3A7E-C46D-D631-92D4-B00A663F5D8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E2C3A7E-C46D-D631-92D4-B00A663F5D8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E2C3A7E-C46D-D631-92D4-B00A663F5D8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E2C3A7E-C46D-D631-92D4-B00A663F5D8E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF5CB028-35D7-F1FC-961A-65BF63B44114}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF5CB028-35D7-F1FC-961A-65BF63B44114}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF5CB028-35D7-F1FC-961A-65BF63B44114}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF5CB028-35D7-F1FC-961A-65BF63B44114}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78F8C175-869F-CA33-3A37-F7782D75F3E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78F8C175-869F-CA33-3A37-F7782D75F3E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78F8C175-869F-CA33-3A37-F7782D75F3E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78F8C175-869F-CA33-3A37-F7782D75F3E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58AEF624-F04D-4319-191E-D12632AA4319}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58AEF624-F04D-4319-191E-D12632AA4319}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58AEF624-F04D-4319-191E-D12632AA4319}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58AEF624-F04D-4319-191E-D12632AA4319}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B032C3B-2B71-CF73-6017-5FED45E39193}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B032C3B-2B71-CF73-6017-5FED45E39193}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B032C3B-2B71-CF73-6017-5FED45E39193}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B032C3B-2B71-CF73-6017-5FED45E39193}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65060AEC-1900-2457-AC8C-EF69955C453D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65060AEC-1900-2457-AC8C-EF69955C453D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65060AEC-1900-2457-AC8C-EF69955C453D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65060AEC-1900-2457-AC8C-EF69955C453D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F57642F3-C37C-D174-720E-6A6AAD5BEE22} = {1AE8ACA6-933B-BF2A-3671-3E2EAC007D16}
+		{E114D0A4-F167-7388-1AC2-BA967C5C9DC9} = {F57642F3-C37C-D174-720E-6A6AAD5BEE22}
+		{8787F9DB-5AAE-42DD-A9F9-2E1287E3A634} = {F57642F3-C37C-D174-720E-6A6AAD5BEE22}
+		{98EBEF9D-FF98-BC26-0C73-4D57B95C21E2} = {F57642F3-C37C-D174-720E-6A6AAD5BEE22}
+		{BF8BE70E-0CD7-26B9-8568-4FA5EA0D9B93} = {F57642F3-C37C-D174-720E-6A6AAD5BEE22}
+		{6E2C3A7E-C46D-D631-92D4-B00A663F5D8E} = {F57642F3-C37C-D174-720E-6A6AAD5BEE22}
+		{0F9113EE-888A-26D2-68B0-4A7D0A2A8745} = {1AE8ACA6-933B-BF2A-3671-3E2EAC007D16}
+		{FF5CB028-35D7-F1FC-961A-65BF63B44114} = {0F9113EE-888A-26D2-68B0-4A7D0A2A8745}
+		{78F8C175-869F-CA33-3A37-F7782D75F3E1} = {0F9113EE-888A-26D2-68B0-4A7D0A2A8745}
+		{58AEF624-F04D-4319-191E-D12632AA4319} = {0F9113EE-888A-26D2-68B0-4A7D0A2A8745}
+		{1B032C3B-2B71-CF73-6017-5FED45E39193} = {0F9113EE-888A-26D2-68B0-4A7D0A2A8745}
+		{65060AEC-1900-2457-AC8C-EF69955C453D} = {0F9113EE-888A-26D2-68B0-4A7D0A2A8745}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2AAA8B5F-81D6-49D6-AB04-5921D0BF9532}
+	EndGlobalSection
+EndGlobal

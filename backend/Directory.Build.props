@@ -1,0 +1,44 @@
+<Project>
+
+  <!--
+    Solution-wide MSBuild defaults for SlotSmart.
+    Production projects (anything under src/) are strict: nullable on, warnings as errors,
+    no implicit usings drift, latest C# language version.
+    Test projects override TreatWarningsAsErrors via tests/Directory.Build.props.
+  -->
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <AnalysisMode>Recommended</AnalysisMode>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <!--
+      GenerateDocumentationFile=true is required by IDE0005 (unused usings) to fire on build
+      (https://github.com/dotnet/roslyn/issues/41640). CS1591 (missing XML doc) is silenced below
+      so we don't have to document every public symbol.
+    -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>
+      $(NoWarn);
+      CS1591;
+      CA1716;
+      CA1000
+    </NoWarn>
+    <!--
+      Suppression rationale:
+        CS1591 - missing XML doc on public symbol; we document selectively.
+        CA1716 - namespace/type name collides with VB.NET reserved word (Shared, Error). C#-only project.
+        CA1000 - static members on generic types; standard for Result<T>.Success/Failure factories.
+    -->
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <RootNamespace>$(MSBuildProjectName)</RootNamespace>
+    <AssemblyName>$(MSBuildProjectName)</AssemblyName>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+
+</Project>

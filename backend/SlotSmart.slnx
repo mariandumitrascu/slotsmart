@@ -1,0 +1,16 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/SlotSmart.Api/SlotSmart.Api.csproj" />
+    <Project Path="src/SlotSmart.Application/SlotSmart.Application.csproj" />
+    <Project Path="src/SlotSmart.Domain/SlotSmart.Domain.csproj" />
+    <Project Path="src/SlotSmart.Infrastructure/SlotSmart.Infrastructure.csproj" />
+    <Project Path="src/SlotSmart.Shared/SlotSmart.Shared.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/SlotSmart.Api.Tests/SlotSmart.Api.Tests.csproj" />
+    <Project Path="tests/SlotSmart.Application.Tests/SlotSmart.Application.Tests.csproj" />
+    <Project Path="tests/SlotSmart.Architecture.Tests/SlotSmart.Architecture.Tests.csproj" />
+    <Project Path="tests/SlotSmart.Domain.Tests/SlotSmart.Domain.Tests.csproj" />
+    <Project Path="tests/SlotSmart.Infrastructure.Tests/SlotSmart.Infrastructure.Tests.csproj" />
+  </Folder>
+</Solution>

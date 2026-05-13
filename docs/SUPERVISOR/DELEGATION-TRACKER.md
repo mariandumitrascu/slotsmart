@@ -12,7 +12,7 @@
 
 ## 🟢 ACTIVE DELEGATIONS
 
-**No active delegations.** Ready to dispatch `P1-T01` (handoff prompt prepared).
+**No active delegations.** P1-T02 / P1-T04 / P1-T05 / P1-T07 are unblocked — handoff prompts to be generated next session.
 
 | Task | Worker | Mode | Started | Last update | Phase gate | Status |
 |---|---|---|---|---|---|---|
@@ -32,11 +32,9 @@
 
 ## ✅ RECENTLY COMPLETED
 
-**No completed tasks yet.**
-
 | Task | Worker | Completed | Phase gate progressed |
 |---|---|---|---|
-| _empty_ | | | |
+| **P1-T01** Repository & .NET 10 solution scaffolding | SUPERVISOR (HYBRID) | 2026-05-13 | G1 §1 ✓ (1/7); G1 §2.1 ✓ (build + test clean) |
 
 ---
 
@@ -56,7 +54,7 @@ Status legend: ⏳ queued · 📦 ready (handoff prompt prepared) · 🚧 in pro
 
 | ID | Task | Size | Dep | Model | Status | Handoff prompt | Worker / mode | Notes |
 |---|---|---|---|---|---|---|---|---|
-| P1-T01 | Repository & solution scaffolding | M | — | Sonnet | 📦 ready | [P1-T01](./handoff-prompts/P1-T01-solution-scaffolding.md) | _unassigned_ | Sets conventions; escalate to Opus if .NET 10 preview unavailable (ADR-006) |
+| P1-T01 | Repository & solution scaffolding | M | — | Sonnet | ✅ done | [P1-T01](./handoff-prompts/P1-T01-solution-scaffolding.md) | SUPERVISOR (HYBRID) | 10 projects, 0 warnings, 15 tests pass, arch-test red-green demonstrated, /api/v1/health returns 200 |
 | P1-T02 | Database, EF Core, migrations bootstrap | M | T01 | Sonnet | ⏳ queued | _generate after T01_ | — | |
 | P1-T03 | Docker & docker-compose dev env | M | T01,T02 | Auto | ⏳ queued | _generate after T02_ | — | Mostly YAML/Dockerfiles |
 | P1-T04 | CI pipeline (GitHub Actions) | S | T01 | Auto | ⏳ queued | _generate after T01_ | — | Mostly YAML; runs parallel with T02 |
@@ -115,11 +113,11 @@ Status legend: ⏳ queued · 📦 ready (handoff prompt prepared) · 🚧 in pro
 ## 📊 STATISTICS
 
 ### Phase 1–5 mission progress
-- Tasks ready to dispatch: **1** (P1-T01)
-- Tasks queued (waiting on dependencies): **32**
+- Tasks completed: **1** (P1-T01)
+- Tasks ready to dispatch (newly unblocked by P1-T01): **4** (P1-T02, P1-T04, P1-T05, P1-T07) — handoff prompts to be generated next session
+- Tasks queued (waiting on transitive dependencies): **28**
 - Tasks in progress: 0
-- Tasks completed: 0
-- Phase gates passed: 0 / 5
+- Phase gates passed: 0 / 5 (G1: 1/7 task pre-conditions ticked, §2.1 verified locally)
 
 ### Model distribution (initial recommendations, may shift on escalation)
 - **Opus** (high-capability): **7** — P2-T01/T02, P4-T02/T03, P5-T01/T02/T05
