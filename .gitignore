@@ -30,7 +30,7 @@ TestResults/
 *.dotsettings.user
 project.lock.json
 project.fragment.lock.json
-.config/dotnet-tools.json
+# .config/dotnet-tools.json is intentionally NOT ignored — it pins per-repo dotnet tools.
 *.nupkg
 *.snupkg
 packages/

@@ -11,7 +11,7 @@
 All seven Phase 1 tasks must be `✅ COMPLETED` in [`../DELEGATION-TRACKER.md`](../DELEGATION-TRACKER.md):
 
 - [x] **P1-T01** Repository & solution scaffolding (✅ 2026-05-13 — see Run log)
-- [ ] **P1-T02** Database, EF Core, migrations bootstrap
+- [x] **P1-T02** Database, EF Core 10, migrations bootstrap (✅ 2026-05-13 — see Run log)
 - [ ] **P1-T03** Docker & docker-compose dev environment
 - [ ] **P1-T04** CI pipeline (GitHub Actions)
 - [ ] **P1-T05** Frontend scaffolding (Vite + MUI + Router)
@@ -140,6 +140,7 @@ If any item fails:
 
 | Date | Result | Evidence | Supervisor notes |
 |---|---|---|---|
+| 2026-05-13 | 🟡 §2.1 + §2.4 partial pass (P1-T01 + P1-T02) | `dotnet build SlotSmart.slnx -warnaserror` → 0 warn / 0 err / 10 projects; `dotnet test SlotSmart.slnx --no-build` → 5 assemblies / 19 tests / 0 fail (incl. 2 Postgres-Testcontainers tests against `postgres:16-alpine`); `dotnet ef database update -p src/SlotSmart.Infrastructure -s src/SlotSmart.Api` against fresh `postgres:16-alpine` (port 55432) → schema `app` created, `app.__EFMigrationsHistory` populated with `20260513192059_InitialCreate / 10.0.0`; `dotnet run` against same DB → `Applied EF Core migrations on startup (Development).`; `curl /api/v1/health → 200 {"status":"ok"}`. | §2.2/2.3/2.5/2.6/2.7 deferred until P1-T05/T03/T07/T04 land; §1 tasks T03–T07 still open; gate still ⏳ overall. |
 | 2026-05-13 | 🟡 §2.1 partial pass (P1-T01 only) | `dotnet --version` → 10.0.300; `dotnet build SlotSmart.slnx -warnaserror` → 0 warn / 0 err / 10 projects; `dotnet test SlotSmart.slnx --no-build` → 5 assemblies / 15 tests / 0 fail; `curl http://localhost:5080/api/v1/health` → `200 {"status":"ok"}`; arch-test red-green confirmed (temp EF Core ref injected → 1 test failed with `offending types: SlotSmart.Domain.Temp.TempViolation` → reverted → 9/9 pass) | §2.2/2.3/2.4 deferred until P1-T05/T03/T04 land; §1 tasks T02–T07 still open; gate still ⏳ overall. |
 
 ---

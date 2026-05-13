@@ -1,9 +1,9 @@
 # Delegation Tracker
 ## SlotSmart - Task Delegation & Progress Tracking
 
-**Last Updated**: 2026-05-12
+**Last Updated**: 2026-05-13
 **Active Delegations**: 0
-**Completed This Week**: 0
+**Completed This Week**: 2 (P1-T01, P1-T02)
 **In-scope tasks (P1–P5)**: 33
 
 > Mission: execute Phases 1–5 (MVP). Source plan: [`../plan/`](../plan/). Strategy: [`./EXECUTION-PLAN.md`](./EXECUTION-PLAN.md). Gates: [`./phase-gates/`](./phase-gates/). Handoffs: [`./handoff-prompts/`](./handoff-prompts/).
@@ -12,7 +12,7 @@
 
 ## 🟢 ACTIVE DELEGATIONS
 
-**No active delegations.** P1-T02 / P1-T04 / P1-T05 / P1-T07 are unblocked — handoff prompts to be generated next session.
+**No active delegations.** P1-T03 / P1-T04 / P1-T05 / P1-T06 / P1-T07 are unblocked — handoff prompts to be generated next session.
 
 | Task | Worker | Mode | Started | Last update | Phase gate | Status |
 |---|---|---|---|---|---|---|
@@ -34,6 +34,7 @@
 
 | Task | Worker | Completed | Phase gate progressed |
 |---|---|---|---|
+| **P1-T02** Database, EF Core 10 & migrations bootstrap | SUPERVISOR (HYBRID) | 2026-05-13 | G1 §1 ✓ (2/7); G1 §2.1 ✓ (19/19 tests, including 1 Postgres integration); G1 §2.4 ✓ (`dotnet ef database update` against fresh Postgres) |
 | **P1-T01** Repository & .NET 10 solution scaffolding | SUPERVISOR (HYBRID) | 2026-05-13 | G1 §1 ✓ (1/7); G1 §2.1 ✓ (build + test clean) |
 
 ---
@@ -55,7 +56,7 @@ Status legend: ⏳ queued · 📦 ready (handoff prompt prepared) · 🚧 in pro
 | ID | Task | Size | Dep | Model | Status | Handoff prompt | Worker / mode | Notes |
 |---|---|---|---|---|---|---|---|---|
 | P1-T01 | Repository & solution scaffolding | M | — | Sonnet | ✅ done | [P1-T01](./handoff-prompts/P1-T01-solution-scaffolding.md) | SUPERVISOR (HYBRID) | 10 projects, 0 warnings, 15 tests pass, arch-test red-green demonstrated, /api/v1/health returns 200 |
-| P1-T02 | Database, EF Core, migrations bootstrap | M | T01 | Sonnet | ⏳ queued | _generate after T01_ | — | |
+| P1-T02 | Database, EF Core 10, migrations bootstrap | M | T01 | Sonnet | ✅ done | [P1-T02](./handoff-prompts/P1-T02-database-ef-core.md) | SUPERVISOR (HYBRID) | EntityConfiguration<T> base + InitialCreate (empty); 4 new tests incl. Postgres-Testcontainers smoke; +1 arch test for config derivation |
 | P1-T03 | Docker & docker-compose dev env | M | T01,T02 | Auto | ⏳ queued | _generate after T02_ | — | Mostly YAML/Dockerfiles |
 | P1-T04 | CI pipeline (GitHub Actions) | S | T01 | Auto | ⏳ queued | _generate after T01_ | — | Mostly YAML; runs parallel with T02 |
 | P1-T05 | Frontend scaffolding (Vite + MUI + Router) | M | T01 | Sonnet | ⏳ queued | _generate after T01_ | — | Sets frontend conventions |
@@ -113,11 +114,11 @@ Status legend: ⏳ queued · 📦 ready (handoff prompt prepared) · 🚧 in pro
 ## 📊 STATISTICS
 
 ### Phase 1–5 mission progress
-- Tasks completed: **1** (P1-T01)
-- Tasks ready to dispatch (newly unblocked by P1-T01): **4** (P1-T02, P1-T04, P1-T05, P1-T07) — handoff prompts to be generated next session
-- Tasks queued (waiting on transitive dependencies): **28**
+- Tasks completed: **2** (P1-T01, P1-T02)
+- Tasks ready to dispatch (newly unblocked by P1-T02): **5** (P1-T03 ← needed both T01 & T02; P1-T04, P1-T05, P1-T07 ← need T01 only; P1-T06 ← needs T05 first) — handoff prompts to be generated next session
+- Tasks queued (waiting on transitive dependencies): **27**
 - Tasks in progress: 0
-- Phase gates passed: 0 / 5 (G1: 1/7 task pre-conditions ticked, §2.1 verified locally)
+- Phase gates passed: 0 / 5 (G1: 2/7 task pre-conditions ticked, §2.1 / §2.4 verified locally for both)
 
 ### Model distribution (initial recommendations, may shift on escalation)
 - **Opus** (high-capability): **7** — P2-T01/T02, P4-T02/T03, P5-T01/T02/T05

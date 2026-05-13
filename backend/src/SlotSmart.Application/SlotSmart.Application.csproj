@@ -7,6 +7,12 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <!--
+      Application sees only EF Core Abstractions surface (DbSet<T>, query/save signatures
+      via interfaces). The concrete provider lives in Infrastructure. Per layer rules,
+      Application must NOT pull in Microsoft.EntityFrameworkCore.Relational or Npgsql.
+    -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
   </ItemGroup>
 
   <ItemGroup>

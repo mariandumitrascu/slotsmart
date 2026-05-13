@@ -2,7 +2,7 @@
 
 Modern SaaS platform for tennis clubs — schedule trainings, manage members, take bookings.
 
-> **Status**: Phase 1 (Foundation) in progress. The backend solution scaffolds and runs; database, Docker compose, CI, frontend, OpenAPI client, and observability arrive in P1-T02–T07. See [`docs/plan/`](docs/plan/) for the full roadmap and [`docs/SUPERVISOR/`](docs/SUPERVISOR/) for the supervised execution.
+> **Status**: Phase 1 (Foundation) in progress. The backend solution + EF Core / Postgres persistence are landed; Docker compose, CI, frontend, OpenAPI client, and observability arrive in P1-T03–T07. See [`docs/plan/`](docs/plan/) for the full roadmap and [`docs/SUPERVISOR/`](docs/SUPERVISOR/) for the supervised execution.
 
 ---
 
@@ -63,20 +63,55 @@ dotnet --list-sdks  # must include a 10.0.x entry
 
 ---
 
-## Build & run (backend only — P1-T01 deliverable)
+## Build & run (backend — P1-T01 + P1-T02)
+
+### 1. Start a local Postgres
+
+```bash
+docker run --rm -d --name slotsmart-pg \
+  -e POSTGRES_USER=slotsmart \
+  -e POSTGRES_PASSWORD=slotsmart \
+  -e POSTGRES_DB=slotsmart \
+  -p 5432:5432 \
+  postgres:16-alpine
+```
+
+> If port 5432 is taken on your machine, publish to a free port (e.g. `-p 55432:5432`) and override the connection string with `export Postgres__ConnectionString="Host=localhost;Port=55432;Database=slotsmart;Username=slotsmart;Password=slotsmart"` before any `dotnet ef` / `dotnet run` invocation. The full Docker compose stack lands in P1-T03.
+
+### 2. Restore tools, build, test
 
 ```bash
 cd backend
+dotnet tool restore           # installs the dotnet-ef local tool pinned in dotnet-tools.json
 dotnet restore
 dotnet build -warnaserror
-dotnet test
+dotnet test                   # 19 tests; one suite uses Testcontainers + postgres:16-alpine
+```
+
+### 3. Apply migrations and run the API
+
+```bash
+# Apply migrations explicitly (optional — the API also auto-applies on startup in Development).
+dotnet ef database update -p src/SlotSmart.Infrastructure -s src/SlotSmart.Api
+
+# Run the API.
 dotnet run --project src/SlotSmart.Api --urls http://localhost:5080
 # In another shell:
 curl -fsS http://localhost:5080/api/v1/health
 # → 200  {"status":"ok"}
 ```
 
-The richer health endpoint (with database ping), Postgres, full OpenAPI, frontend, Docker compose and CI all land in subsequent P1 tasks. See the phase plan: [`docs/plan/phase-1-foundation/README.md`](docs/plan/phase-1-foundation/README.md).
+### Adding a new EF Core migration
+
+```bash
+cd backend
+dotnet ef migrations add <Name> \
+  -p src/SlotSmart.Infrastructure \
+  -s src/SlotSmart.Api \
+  -o Persistence/Migrations
+```
+
+The richer health endpoint (with DB ping), full OpenAPI, frontend, Docker compose and CI land in subsequent P1 tasks. See [`docs/plan/phase-1-foundation/README.md`](docs/plan/phase-1-foundation/README.md).
 
 ---
 

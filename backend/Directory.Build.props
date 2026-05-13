@@ -27,13 +27,17 @@
       $(NoWarn);
       CS1591;
       CA1716;
-      CA1000
+      CA1000;
+      CA1848
     </NoWarn>
     <!--
       Suppression rationale:
         CS1591 - missing XML doc on public symbol; we document selectively.
         CA1716 - namespace/type name collides with VB.NET reserved word (Shared, Error). C#-only project.
         CA1000 - static members on generic types; standard for Result<T>.Success/Failure factories.
+        CA1848 - "use LoggerMessage delegates" — premature for the few callsites we have today.
+                 Re-evaluate in P1-T07 (Serilog + OpenTelemetry); we'll switch to LoggerMessage
+                 source generators for hot paths there.
     -->
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <RootNamespace>$(MSBuildProjectName)</RootNamespace>

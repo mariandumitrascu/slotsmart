@@ -20,6 +20,32 @@ Each entry should include:
 
 ## 🔍 RECENT ENTRIES
 
+### 2026-05-13 - P1-T02 closed in HYBRID mode (EF Core 10 + dual-key configuration base + Testcontainers)
+
+**Context**
+P1-T01 left the solution at a buildable state with no persistence layer. P1-T02 is the standard "add EF Core, add a DbContext, ship an empty migration" task — but the dual-key pattern (ADR-007) means we also have to ship the `EntityConfiguration<T>` base class that every later persistence task will inherit from. Getting that base class right matters more than any other line of code in this task.
+
+**Decision**
+Self-execute in HYBRID mode (same as P1-T01). Generate the handoff prompt for the record (and to give the user the dual-key context the original `task-02-database-ef-core.md` spec didn't have), then implement directly.
+
+**Reasoning**
+- Three things compound that a worker would need to discover and re-derive: (a) the dual-key shadow-property wiring, (b) the .NET 10 GA tool-manifest convention (`dotnet-tools.json` lives at the project root, not under `.config/`), (c) the security-pin needed to silence the EF Core 10 transitive `System.Security.Cryptography.Xml` advisory under `-warnaserror`. Easier to do once and document than to fork them into the worker prompt.
+- The `EntityConfiguration<T>` base class deviates from the canonical task spec (which doesn't mention it at all). Codifying it in this task — with an architecture test asserting every concrete config inherits from it — locks in ADR-007 mechanically rather than by code review.
+- Testcontainers + Postgres ran into a Docker.DotNet ↔ ECR-credential-helper conflict on the dev host. Resolved with `[ModuleInitializer]` setting `TESTCONTAINERS_RYUK_DISABLED=true` and documenting the trade-off. CI will revisit if it re-surfaces.
+
+**Outcome**
+- Build clean (0 warnings); 19/19 tests pass (was 15; +3 in Infrastructure.Tests, +1 arch test).
+- `dotnet ef database update` against fresh `postgres:16-alpine` creates schema `app` and records the migration.
+- API auto-applies migrations on startup in Development; `/api/v1/health → 200` against a real DB.
+- Phase-1-gate G1 §1 ticks 2/7 tasks; G1 §2.1 and §2.4 both pass locally for what's been built so far.
+
+**Impact**
+- Every later persistence task now has a uniform place to drop new configurations (just inherit `EntityConfiguration<MyEntity>` and call `base.Configure(builder)`).
+- The Testcontainers fixture is the template for every future integration test — written once, reused everywhere.
+- Five P1 tasks now unblocked (T03/T04/T05/T07 + T06 once T05 lands). The plan can comfortably go 2-up in parallel from here.
+
+---
+
 ### 2026-05-13 - P1-T01 closed in HYBRID mode (.NET 10 GA pivot + dual-key adoption)
 
 **Context**

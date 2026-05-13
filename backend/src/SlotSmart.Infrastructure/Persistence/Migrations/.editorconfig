@@ -1,0 +1,12 @@
+# EF Core generates migration files with block-namespace style and other "older" idioms.
+# Relaxing the strict-style rules just for this folder keeps the rest of the codebase strict.
+
+[*.cs]
+# Block namespaces are EF Core's default; do not fight the tool.
+dotnet_diagnostic.IDE0161.severity = none
+# Generated migrations may carry unused usings.
+dotnet_diagnostic.IDE0005.severity = none
+# Generated parameter / type names sometimes trigger naming-style or doc analyzers.
+dotnet_diagnostic.CA1707.severity = none
+dotnet_diagnostic.CA1062.severity = none
+dotnet_diagnostic.CA1822.severity = none

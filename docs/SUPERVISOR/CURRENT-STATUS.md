@@ -2,7 +2,7 @@
 ## SlotSmart - Real-time Project Health Dashboard
 
 **Last Updated**: 2026-05-13
-**Project Phase**: Phase 1 — Foundation (1/7 tasks complete)
+**Project Phase**: Phase 1 — Foundation (2/7 tasks complete)
 **Mission**: Deliver MVP via Phases 1–5
 **Overall Health**: 🟢 In flight
 
@@ -15,13 +15,13 @@
 │ SlotSmart - STATUS OVERVIEW                                 │
 ├─────────────────────────────────────────────────────────────┤
 │                                                              │
-│ 🏗️  PHASE: Phase 1 — Foundation (1/7 done)                  │
+│ 🏗️  PHASE: Phase 1 — Foundation (2/7 done)                  │
 │                                                              │
 │    Plan & Architecture:        [✅ COMPLETE]                │
 │    SUPERVISOR framework:       [✅ INSTALLED]               │
 │    Execution plan & gates:     [✅ DEFINED]                 │
 │    Backend solution scaffold:  [✅ P1-T01 LANDED]           │
-│    EF Core / Postgres:         [⏳ P1-T02]                  │
+│    EF Core / Postgres:         [✅ P1-T02 LANDED]           │
 │    Docker compose dev stack:   [⏳ P1-T03]                  │
 │    CI pipeline:                [⏳ P1-T04]                  │
 │    Frontend (React + MUI):     [⏳ P1-T05]                  │
@@ -29,8 +29,8 @@
 │    Logging / config / OTel:    [⏳ P1-T07]                  │
 │                                                              │
 │ 📋 ACTIVE WORK:          0 tasks in progress                │
-│ 📦 READY TO DISPATCH:    4 (P1-T02, T04, T05, T07)          │
-│ ⚠️  OPEN DECISIONS:      0 (R1, R2, .NET pin all closed)    │
+│ 📦 READY TO DISPATCH:    5 (P1-T03, T04, T05, T06, T07)     │
+│ ⚠️  OPEN DECISIONS:      0                                  │
 │ 📅 LAST UPDATE:          2026-05-13                         │
 │                                                              │
 └─────────────────────────────────────────────────────────────┘
@@ -42,13 +42,13 @@
 
 | Phase | Tasks | Status | Gate |
 |---|---|---|---|
-| 1. Foundation | 1 / 7 | 🟢 In progress (P1-T01 ✅) | [G1](./phase-gates/phase-1-gate.md) ⏳ |
+| 1. Foundation | 2 / 7 | 🟢 In progress (P1-T01 ✅, P1-T02 ✅) | [G1](./phase-gates/phase-1-gate.md) ⏳ |
 | 2. Auth & Tenancy | 0 / 6 | ⏳ Blocked on P1 | [G2](./phase-gates/phase-2-gate.md) ⏳ |
 | 3. Club & Members | 0 / 7 | ⏳ Blocked on P2 | [G3](./phase-gates/phase-3-gate.md) ⏳ |
 | 4. Training | 0 / 7 | ⏳ Blocked on P3 | [G4](./phase-gates/phase-4-gate.md) ⏳ |
 | 5. Booking | 0 / 6 | ⏳ Blocked on P4 | [G5](./phase-gates/phase-5-gate.md) ⏳ — MVP DONE |
 
-**Overall MVP completion**: 1 / 33 tasks · 0 / 5 gates passed.
+**Overall MVP completion**: 2 / 33 tasks · 0 / 5 gates passed.
 
 ---
 
@@ -81,8 +81,9 @@
 
 1. [x] **R1 / R2 closed**: .NET 10 went GA on 2026-05-12; pinned 10.0.300 in `backend/global.json` per ADR-006. Installed locally to `~/.dotnet`.
 2. [x] **P1-T01 landed** in HYBRID mode: backend solution scaffold builds clean, 15 tests pass, `/api/v1/health → 200`, architecture-test red-green demonstrated.
-3. [ ] Generate next batch of handoff prompts: **P1-T02** (EF Core + DbContext + dual-key entity configuration base — Sonnet), **P1-T04** (CI pipeline — Sonnet), **P1-T05** (frontend bootstrap — Sonnet), **P1-T07** (logging / config / OTel — Sonnet). Up to 2 in parallel per `EXECUTION-PLAN.md` §2.4.
-4. [ ] **User decision (low urgency)**: do you want me to (a) dispatch P1-T02 next session in HYBRID mode, (b) generate the four handoff prompts and let you delegate them, or (c) some mix?
+3. [x] **P1-T02 landed** in HYBRID mode: EF Core 10 + Postgres + Testcontainers smoke + dual-key `EntityConfiguration<T>` base; 19 tests pass (4 new in Infrastructure.Tests, +1 arch test); `dotnet ef database update` against fresh `postgres:16-alpine` creates `app` schema; API auto-applies migrations on startup.
+4. [ ] Generate next batch of handoff prompts (3 still queued): **P1-T03** (Docker compose — Sonnet), **P1-T04** (CI pipeline — Sonnet), **P1-T05** (frontend bootstrap — Sonnet), **P1-T06** (OpenAPI client — Sonnet, depends on T01 only), **P1-T07** (logging / config / OTel — Sonnet). Up to 2 in parallel per `EXECUTION-PLAN.md` §2.4.
+5. [ ] **User decision (low urgency)**: do you want me to (a) keep HYBRID-executing P1 tasks one at a time, (b) generate the next batch of handoff prompts and let you delegate them, or (c) some mix?
 
 ### Phase 1 in flight (after T01)
 
@@ -94,13 +95,15 @@
 
 ## 📦 COMPONENT STATUS
 
-### Backend: ASP.NET Core (.NET 10 — pin policy pending)
+### Backend: ASP.NET Core (.NET 10 LTS, 10.0.300 pinned)
 
 | Feature | Status | Owning task |
 |---|---|---|
-| Solution scaffold (Clean Architecture) | ⏳ Ready | P1-T01 |
-| Architecture rule tests | ⏳ Ready | P1-T01 |
-| EF Core + Postgres + first migration | ⏳ Queued | P1-T02 |
+| Solution scaffold (Clean Architecture) | ✅ Complete | P1-T01 |
+| Architecture rule tests (10 tests) | ✅ Complete | P1-T01 + P1-T02 |
+| EF Core 10 + Postgres + InitialCreate migration | ✅ Complete | P1-T02 |
+| Testcontainers integration test base | ✅ Complete | P1-T02 |
+| `EntityConfiguration<T>` dual-key base | ✅ Complete | P1-T02 |
 | Health endpoint with DB ping | ⏳ Queued | P1-T06 |
 | Observability (Serilog + OTel + Seq) | ⏳ Queued | P1-T07 |
 | Tenant resolution + EF filters | ⏳ Queued | P2-T01 |
@@ -131,7 +134,7 @@
 |---|---|---|
 | docker-compose dev stack | ⏳ Queued | P1-T03 |
 | GitHub Actions CI | ⏳ Queued | P1-T04 |
-| EF Core migrations | ⏳ Queued | P1-T02 |
+| EF Core migrations infra | ✅ Complete | P1-T02 |
 | Seq / OTel collector (local) | ⏳ Queued | P1-T07 |
 
 ---

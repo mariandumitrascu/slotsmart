@@ -9,6 +9,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **P1-T02 — Database, EF Core 10 & migrations bootstrap** (`backend/`):
+  - **Tooling**: `backend/dotnet-tools.json` adds `dotnet-ef` 10.0.8 as a local tool (`dotnet tool restore`); the manifest is committed for reproducible CI / dev setup.
+  - **Packages (CPM)**: `Directory.Packages.props` pins `Microsoft.EntityFrameworkCore` / `.Design` / `.Relational` 10.0.0, `Npgsql.EntityFrameworkCore.PostgreSQL` 10.0.0, `Testcontainers.PostgreSql` 4.7.0, the `Microsoft.Extensions.Configuration*` families at 10.0.8, and a transitive override of `System.Security.Cryptography.Xml` to 10.0.8 to silence two known high-severity advisories shipped with the EF Core 10 transitive graph.
+  - **src/SlotSmart.Application/Common/Abstractions/**: `IClock` (`DateTimeOffset UtcNow`), `IUnitOfWork` (`SaveChangesAsync`), `ITenantContext` carrying both `long TenantId` (surrogate, used by EF query filters and FKs) and `Guid TenantEntityId` (UUIDv7, used in JWT / audit / public URLs) — shape per ADR-007 + `multi-tenancy-strategy.md` §3.
+  - **src/SlotSmart.Infrastructure/**:
+    - `Time/SystemClock.cs` — singleton `IClock` returning OS UTC time.
+    - `Tenancy/NoopTenantContext.cs` — default scoped `ITenantContext` reporting "unresolved" until P2-T01 ships `HttpTenantContext`.
+    - `Persistence/SlotSmartDbContext.cs` — EF Core context, default schema `app`, auto-applies every `IEntityTypeConfiguration<>` from the assembly, ready to register tenant query filters once concrete `IMultiTenantEntity` implementers exist.
+    - `Persistence/Configurations/EntityConfiguration<TEntity>.cs` — base configuration class that wires the **dual-key identity pattern** (ADR-007): adds the surrogate `bigint` `Id` shadow property as the PK with `UseIdentityColumn()`, marks `EntityId` as `ValueGeneratedNever()`, and creates a unique index on `EntityId`.
+    - `Persistence/Interceptors/TenantStampingInterceptor.cs` — wired-but-no-op `SaveChangesInterceptor` with an `InvocationCount` spy; real stamping logic lands in P2-T01 along with the first concrete `IMultiTenantEntity`.
+    - `Persistence/DesignTimeDbContextFactory.cs` — `IDesignTimeDbContextFactory<SlotSmartDbContext>` so `dotnet ef` can construct the context without booting the host; reads `Postgres__ConnectionString` env var, falls back to localhost defaults.
+    - `Persistence/Migrations/20260513192059_InitialCreate.cs` — empty `Up()` / `Down()` (no entities yet); first run creates the `app` schema and `app.__EFMigrationsHistory` table.
+    - `DependencyInjection.cs` — split into `AddSlotSmartInfrastructure(IConfiguration)` and `AddSlotSmartInfrastructureForDevelopment(IConfiguration)`; registers DbContext + interceptor + tenant context + clock + a thin `IUnitOfWork` adapter; the dev variant additionally enables `EnableDetailedErrors` and `EnableSensitiveDataLogging`.
+  - **src/SlotSmart.Api**:
+    - `Program.cs` — selects dev vs prod infra registration based on environment, **auto-applies migrations on startup in Development only**, wraps the apply call in `try/catch` that logs but does not crash the host (so misconfigured local Postgres surfaces as a warning rather than a tombstoned API).
+    - `appsettings.Development.json` — local-only Postgres connection string + `Microsoft.EntityFrameworkCore.Database.Command: Information` log level.
+  - **tests/SlotSmart.Infrastructure.Tests** (4 tests, ~1 s):
+    - `PostgresIntegrationTestBase.cs` — xUnit `IAsyncLifetime` class fixture that boots `postgres:16-alpine` via Testcontainers (native arm64 — no platform override needed on Apple Silicon) and applies migrations once per fixture.
+    - `DbContextSmokeTests.cs` — verifies `app.__EFMigrationsHistory` exists after `MigrateAsync`, asserts the `_InitialCreate` migration was recorded, and confirms `TenantStampingInterceptor.InvocationCount` increments on `SaveChangesAsync` (proving the interceptor is wired into the DbContext options pipeline).
+    - `DependencyInjectionTests.cs` — asserts `AddSlotSmartInfrastructure` throws when the connection string is missing AND that all five expected services resolve from a built provider when configured.
+    - `TestcontainersConfiguration.cs` — `[ModuleInitializer]` that sets `TESTCONTAINERS_RYUK_DISABLED=true` to side-step Docker.DotNet's ECR-credential-helper conflict on developer machines that have AWS auths in `~/.docker/config.json`. Documented trade-off (orphaned containers if process is `kill -9`-ed).
+  - **tests/SlotSmart.Architecture.Tests** (10 tests, +1 vs P1-T01):
+    - `EntityConfigurationDerivationTests` — asserts every concrete `IEntityTypeConfiguration<>` in `SlotSmart.Infrastructure` derives from `EntityConfiguration<>`. Vacuously green today; will catch any P3+ configuration that bypasses the surrogate-PK base class.
+  - **`backend/src/SlotSmart.Infrastructure/Persistence/Migrations/.editorconfig`** — folder-scoped relax of IDE0161 (block-namespace), IDE0005 (unused usings), CA1707 / CA1062 / CA1822 since EF Core's generated migration files use idioms we don't control.
+  - **`backend/Directory.Build.props`** — adds `CA1848` (LoggerMessage delegates) to the documented `NoWarn` list with a "re-evaluate in P1-T07" rationale; the two callsites in `Program.cs` are dev-startup-only and don't justify source-generated logger messages yet.
+  - **Verification evidence**:
+    - `dotnet build SlotSmart.slnx -warnaserror` → 0 warnings, 0 errors, 10 projects.
+    - `dotnet test` → 19/19 tests pass across all 5 test assemblies (Domain 3, Application 1, Architecture 10, Api 1, Infrastructure 4).
+    - `dotnet ef database update -p src/SlotSmart.Infrastructure -s src/SlotSmart.Api` against a fresh `postgres:16-alpine` (port 55432) → schema `app` created, `app.__EFMigrationsHistory` populated with `20260513192059_InitialCreate / 10.0.0`.
+    - `dotnet run --project src/SlotSmart.Api` against the same DB → log line `Applied EF Core migrations on startup (Development).`; `curl /api/v1/health` returns `200 {"status":"ok"}`.
+  - **Docs**: `README.md` "Build & run" rewritten with a Postgres docker one-liner, a `dotnet tool restore` step, a `dotnet ef database update` example, and a "how to add a new migration" snippet.
+
 - **P1-T01 — .NET 10 Clean Architecture solution scaffold** (`backend/`):
   - `backend/SlotSmart.slnx` (modern .NET 10 XML solution format) with 10 projects.
   - `backend/global.json` pins .NET 10 SDK 10.0.300 with `latestFeature` rollForward (per ADR-006).
@@ -48,9 +80,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **`.gitignore`**: removed `.config/dotnet-tools.json` from the ignore list — local tool manifests must be committed for reproducible builds (.NET 10 places the manifest at `dotnet-tools.json` at the project root, not under `.config/`).
+- **`docs/SUPERVISOR/handoff-prompts/`**: added `P1-T02-database-ef-core.md` with dispatch metadata (Sonnet recommended) and the dual-key context the original `task-02-database-ef-core.md` spec didn't anticipate.
 - **DECISIONS-LOG**: ADR-006 documents the .NET 10 GA pin (10.0.300, LTS) — risks R1 and R2 in `EXECUTION-PLAN.md` are now closed. ADR-007 ratifies the dual-key identity pattern (entry was added concurrently with the `entity-identity.md` doc); ADR-003 (UUIDv7 PK) is now `Superseded by ADR-007`.
-- **DELEGATION-TRACKER**: P1-T01 moved to `✅ Recently Completed` (HYBRID mode, SUPERVISOR self-executed). P1-T02 / P1-T04 / P1-T05 / P1-T07 are now unblocked and queued for handoff-prompt generation.
-- **CURRENT-STATUS**: Phase 1 progress 1/7 tasks; backend scaffold component flipped to `✅ Complete`; open-decisions list reduced (R1 / R2 / .NET pin / execution mode resolved).
+- **DELEGATION-TRACKER**: P1-T01 + P1-T02 moved to `✅ Recently Completed` (both HYBRID, SUPERVISOR self-executed). P1-T04 / P1-T05 / P1-T07 are still unblocked; P1-T03 (Docker compose dev stack) and P1-T06 (OpenAPI client) are also now in scope to dispatch next.
+- **CURRENT-STATUS**: Phase 1 progress 2/7 tasks; backend scaffold + EF Core / Postgres components flipped to `✅ Complete`.
 - **Plan / Architecture**: switched entity identity to a **dual-key pattern** — every entity now has a hidden `bigint` surrogate primary key (the actual clustered / B-tree PK) and a separate public `EntityId : Guid` (UUIDv7) for external use. Motivated by SQL Server's clustered-key inclusion cost and the size / join cost of 16-byte GUIDs across both Postgres and SQL Server (random GUIDs are catastrophic; sequential UUIDv7 mitigates fragmentation but not size). Foreign keys reference the surrogate `bigint`; domain code uses navigation properties. The Domain layer remains pure — the surrogate is an EF Core shadow property added in Infrastructure. Multi-tenant tables now carry `TenantId : bigint` (FK to `Tenants.Id`) instead of `TenantId : uuid`, and `ITenantContext` carries both forms.
   - Added: `docs/plan/00-architecture/entity-identity.md` (canonical pattern, naming, EF configuration, FK strategy, Identity tables, hot-table guidance, DB specifics, architecture tests).
   - Updated: `docs/plan/00-architecture/coding-standards.md` — new "Identifiers" section; UUIDv7 rule reframed as the public id only.
